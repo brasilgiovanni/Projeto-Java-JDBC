@@ -63,8 +63,7 @@ public class SellerDaoJDBC implements SellerDao {
 		PreparedStatement st = null;
 		try {
 			st = conn.prepareStatement("UPDATE seller\r\n"
-					+ "SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ?\r\n" 
-					+ "WHERE Id = ?");
+					+ "SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ?\r\n" + "WHERE Id = ?");
 
 			st.setString(1, obj.getName());
 			st.setString(2, obj.getEmail());
@@ -74,7 +73,6 @@ public class SellerDaoJDBC implements SellerDao {
 			st.setInt(6, obj.getId());
 
 			st.executeUpdate();
-
 
 		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
@@ -86,7 +84,24 @@ public class SellerDaoJDBC implements SellerDao {
 
 	@Override
 	public void deleteById(Integer id) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement("DELETE FROM seller\r\n"
+					+ "WHERE Id = ?");
+			st.setInt(1, id);
+			int rows = st.executeUpdate();
+			
+			if (rows == 0) { // se as linhas afetadas forem zero, signinifca que o "id" não existe!
+				throw new DbException("Sorry, Incorrect id. Try next time.");
+			}
+			
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+		}
 
 	}
 
