@@ -24,8 +24,8 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 	public void insert(Department obj) {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement("INSERT INTO department " + "(Name) "
-					+ "VALUES " + "(?)", Statement.RETURN_GENERATED_KEYS);
+			st = conn.prepareStatement("INSERT INTO department " + "(Name) " + "VALUES " + "(?)",
+					Statement.RETURN_GENERATED_KEYS);
 
 			st.setString(1, obj.getName());
 
@@ -53,8 +53,20 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 
 	@Override
 	public void update(Department obj) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement("UPDATE department\r\n" + "SET Name = ?" + "WHERE Id = ?");
 
+			st.setString(1, obj.getName());
+			st.setInt(2, obj.getId());
+
+			st.executeUpdate();
+
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(st);
+		}
 	}
 
 	@Override
@@ -65,8 +77,33 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 
 	@Override
 	public Department findById(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement("SELECT * FROM department WHERE id = ?");
+
+			st.setInt(1, id);
+			rs = st.executeQuery();
+			if (rs.next()) {
+				return instantiateDepartment(rs);
+			}
+			return null;
+			
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+			
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+
+	}
+
+	private Department instantiateDepartment(ResultSet rs) throws SQLException {
+		Department dep = new Department();
+		dep.setId(rs.getInt("Id")); // o nome em "" deve ser igual ao da tabela SQL
+		dep.setName(rs.getString("Name"));
+		return dep;
 	}
 
 	@Override
