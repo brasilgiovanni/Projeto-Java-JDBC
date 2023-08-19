@@ -1,9 +1,10 @@
 package application;
 
+import java.util.List;
+
 import model.dao.DaoFactory;
 import model.dao.DepartmentDao;
 import model.entities.Department;
-import model.entities.Seller;
 
 public class Program02 {
 
@@ -27,6 +28,19 @@ public class Program02 {
 		modifyDepartment.setName("Administration");
 		departmentDao.update(modifyDepartment);
 		System.out.println("Update Completed!");
+		
+		System.out.println("\n=== TEST 4: Department delete ===");
+		departmentDao.deleteById(13);
+		System.out.println("The reference Department was deleted.");
+		
+		System.out.println("\n=== TEST 5: Department findAll ===");
+		List<Department> list = departmentDao.findAll();
+		int k = 1;
+		for (Department dep : list) {
+			System.out.println("Department nº " + k + ": " +  dep);
+			k++;
+		}
+		
 	}
 
 }
